@@ -4,6 +4,16 @@
 
 **线上地址：** https://wekyjay.github.io/campus-digital-twin/
 
+## 模型预览
+
+![校园三维模型鸟瞰预览：石拱桥、校园湖、教学楼与方形底座](public/campus_aerial.png)
+
+## 总平面图
+
+![校园规划总平面图：建筑、道路、水系与绿化的位置参考](public/campus_masterplan.jpg)
+
+> 预览为 Blender 渲染；网页可交互地浏览同一校园模型。图纸及渲染图随仓库保存在 `public/`，GitHub README 可直接显示。
+
 ## 本地使用
 
 ```bash
