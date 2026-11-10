@@ -8,7 +8,24 @@ import './style.css';
 const base = import.meta.env.BASE_URL;
 const asset = (path) => `${base}${path}`;
 const icons = { Compass, RotateCcw, Layers3, MapPin, Info, PanelLeftClose, PanelLeftOpen, Sun, Moon, MousePointer2, ExternalLink };
-const icon = (name, size = 18) => icons[name]?.toSvg({ width: size, height: size, 'stroke-width': 1.7, 'aria-hidden': true }) || '';
+// The vanilla `lucide` package exports icon *data tuples*, not objects with toSvg().
+// Build native SVG nodes from its trusted definitions (no HTML-string injection).
+const svgNode = ([tag, attributes, children = []]) => {
+  const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value));
+  for (const child of children) element.appendChild(svgNode(child));
+  return element;
+};
+const icon = (name, size = 18) => {
+  const definition = icons[name];
+  if (!definition) return '';
+  const element = svgNode(definition);
+  element.setAttribute('width', String(size));
+  element.setAttribute('height', String(size));
+  element.setAttribute('stroke-width', '1.7');
+  element.setAttribute('aria-hidden', 'true');
+  return element.outerHTML;
+};
 const app = document.querySelector('#app');
 app.innerHTML = `
   <main class="shell">
