@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Compass, RotateCcw, Layers3, MapPin, Info, PanelLeftClose, PanelLeftOpen, Sun, Moon, MousePointer2, ExternalLink } from 'lucide';
 import { locations, locationById } from './locations.js';
+import { createSky } from './sky.js';
 import './style.css';
 
 const base = import.meta.env.BASE_URL;
@@ -74,6 +75,7 @@ const stage = document.querySelector('#three-stage');
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#dce9ec');
 scene.fog = new THREE.Fog('#dce9ec', 340, 750);
+const sky = createSky(scene);
 const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 1400);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -212,8 +214,9 @@ document.querySelector('#theme-toggle').addEventListener('click', () => {
   document.body.classList.toggle('night', night);
   document.querySelector('#theme-toggle').innerHTML = icon(night ? 'Sun' : 'Moon', 19);
   document.querySelector('#theme-toggle').setAttribute('aria-label', night ? '切换日间模式' : '切换夜间模式');
-  scene.background.set(night ? '#0b1d2c' : '#dce9ec');
-  scene.fog.color.set(night ? '#0b1d2c' : '#dce9ec');
+  scene.background.set(night ? '#162844' : '#dce9ec');
+  scene.fog.color.set(night ? '#263a56' : '#dce9ec');
+  sky.setNight(night);
   hemi.intensity = night ? 1.65 : 3.3;
   sun.intensity = night ? 0.8 : 3.0;
   fill.intensity = night ? 1.2 : 1.35;
@@ -248,7 +251,12 @@ renderer.domElement.addEventListener('pointerup', (event) => {
   if (hits[0]) { openPlace(locationById.get(hits[0].object.userData.locationId)); return; }
 });
 
-function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  sky.follow(camera);
+  renderer.render(scene, camera);
+}
 animate();
 const requestedPlace = window.location.hash.slice(1);
 if (locationById.has(requestedPlace)) openPlace(locationById.get(requestedPlace));
